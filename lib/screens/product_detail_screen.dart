@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/providers/products_provider.dart';
 
 class ProductDetailScreen extends StatelessWidget {
-  final String title;
+ /* final String title;*/
+  static const routeName = '/product-detail';
 
-  ProductDetailScreen(this.title);
+  /*ProductDetailScreen(this.title);*/
   @override
   Widget build(BuildContext context) {
+
+    final productId = ModalRoute.of(context).settings.arguments as String;
+    final loadedProduct = Provider.of<Products>(context, listen: false)//listen false, I am saying that i dont wanna reload when my products list change
+        .findById(productId);
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(loadedProduct.title),
       ),
     );
   }
