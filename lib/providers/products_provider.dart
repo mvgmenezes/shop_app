@@ -38,20 +38,25 @@ class Products with ChangeNotifier{
     ),
   ];
 
-  var _showFavoritesOnly = false;
+  //var _showFavoritesOnly = false;
   List<Product> get items{
-    if(_showFavoritesOnly){
+   /* if(_showFavoritesOnly){
       return _items.where((element) => element.isFavorite).toList();
-    }
+    }*/
     //if put return _items it will return the pointer to the _items,
     //it means that everyone can change the original object, using [..._items] I am returning the object's copy
     return [..._items];
   }
+  List<Product> get favoriteItems{
+      return _items.where((element) => element.isFavorite).toList();
+  }
+
 
   Product findById(String id){
     return _items.firstWhere((element) => element.id == id);
   }
 
+/*
   void showFavoritesOnly(){
     _showFavoritesOnly = true;
     notifyListeners();
@@ -60,6 +65,7 @@ class Products with ChangeNotifier{
     _showFavoritesOnly = false;
     notifyListeners();
   }
+*/
 
   void addProduct(Product product){
     _items.add(product);
