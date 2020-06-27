@@ -26,6 +26,10 @@ class Cart with ChangeNotifier {
     return {..._items};
   }
 
+  int get itemsCount {
+    return _items.length;
+  }
+
   void addItem(Product product) {
     if (_items.containsKey(product.id)) {
       _items.update(product.id, (existingItem) => CartItem(
