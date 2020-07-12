@@ -33,6 +33,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   };
 
   var isInit = true;
+  var _isLoading = false;
 
   void _updateImageUrl(){
     if(!_imageUrlFocusNode.hasFocus){
@@ -84,12 +85,38 @@ class _EditProductScreenState extends State<EditProductScreen> {
      return;
     }
     _form.currentState.save();
+    setState(() {
+      _isLoading=true;
+    });
     if(_editedProduct.id != null){
       Provider.of<Products>(context, listen: false).updateProduct(_editedProduct.id, _editedProduct);
+      setState(() {
+        _isLoading=false;
+      });
     }else{
-      Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+      Provider.of<Products>(context, listen: false).addProduct(_editedProduct)
+        .catchError((error) {
+          return showDialog<Null>(
+            context: context,
+            builder: (ctx) =>
+                AlertDialog(
+                  title: Text('An error occurred!'),
+                  content: Text(error.toString()),
+                  actions: <Widget>[
+                    FlatButton(child: Text('Ok'), onPressed: () {
+                      Navigator.of(context).pop();
+                    },)
+                  ],
+                )
+          );
+        })
+        .then((_) {
+          Navigator.of(context).pop();
+          setState(() {
+            _isLoading=false;
+          });
+        });
     }
-    Navigator.of(context).pop();
   }
   @override
   Widget build(BuildContext context) {
@@ -101,7 +128,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           onPressed: _saveForm,)
         ],
       ),
-      body: Padding(
+      body: _isLoading? Center(child: CircularProgressIndicator(),):Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _form,
@@ -133,7 +160,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   );
                 },
               ), TextFormField(
-                initialValue: _initValues["price"],
+                initialValue: _initValues["price"] == 0?'':_initValues["price"],
                 decoration: InputDecoration(
                   labelText: 'Price'
                 ),

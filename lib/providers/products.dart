@@ -1,8 +1,8 @@
-import 'dart:ffi';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shop_app/providers/product.dart';
-
+import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier{
   List<Product> _items = [
@@ -69,17 +69,29 @@ class Products with ChangeNotifier{
   }
 */
 
-  void addProduct(Product product){
-    Product newProduct = new Product(
-      id: DateTime.now().toString(),
+  Future<void> addProduct(Product product){
+    const url = 'https://haab-575b9.firebaseio.com/products.json';
+    return http.post(url, body: json.encode({
+      'title': product.title,
+      'description': product.description,
+      'price': product.price,
+      'imageUrl': product.imageUrl,
+      'isFavorite': product.isFavorite
+    })).then((response) {
+      final newProduct = new Product(
+      id: json.decode(response.body)['name'],
       title: product.title,
       description: product.description,
       price: product.price,
       imageUrl: product.imageUrl
-    );
-    _items.add(newProduct);
-    //_items.insert(0, newProduct);
-    notifyListeners();
+      );
+      _items.add(newProduct);
+      //_items.insert(0, newProduct);
+      notifyListeners();
+    }).catchError((error) {
+      print(error);
+      throw error;
+    });
   }
 
   void updateProduct(String id, Product newProduct){
