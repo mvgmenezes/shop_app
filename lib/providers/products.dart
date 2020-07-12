@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier{
   List<Product> _items = [
-    Product(
+    /*Product(
       id: 'p1',
       title: 'Red Shirt',
       description: 'A red shirt - it is pretty red!',
@@ -37,7 +37,7 @@ class Products with ChangeNotifier{
       price: 49.99,
       imageUrl:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
-    ),
+    ),*/
   ];
 
   //var _showFavoritesOnly = false;
@@ -69,6 +69,31 @@ class Products with ChangeNotifier{
   }
 */
 
+  //example using async / wait instead then()
+  Future<void> fetchAndSetProducts() async {
+    const url = 'https://haab-575b9.firebaseio.com/products.json';
+    try{
+      final response = await http.get(url);
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      final List<Product> loadedProducts = [];
+      extractedData.forEach((key, value) {
+        loadedProducts.add(Product(
+          id: key,
+          title: value['title'],
+          description: value['description'],
+          price: value['price'],
+          isFavorite: value['isFavorite'],
+          imageUrl: value['imageUrl'],
+        ));
+      });
+      _items = loadedProducts;
+      notifyListeners();
+    }catch (error){
+      throw(error);
+    }
+  }
+
+  //example dont using async / wait but using the then()
   Future<void> addProduct(Product product){
     const url = 'https://haab-575b9.firebaseio.com/products.json';
     return http.post(url, body: json.encode({
