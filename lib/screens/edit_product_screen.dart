@@ -80,7 +80,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     super.dispose();
   }
 
-  void _saveForm(){
+  Future<void> _saveForm() async {
     if(!_form.currentState.validate()){
      return;
     }
@@ -89,10 +89,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
       _isLoading=true;
     });
     if(_editedProduct.id != null){
-      Provider.of<Products>(context, listen: false).updateProduct(_editedProduct.id, _editedProduct);
+      await Provider.of<Products>(context, listen: false).updateProduct(_editedProduct.id, _editedProduct);
       setState(() {
         _isLoading=false;
       });
+      Navigator.of(context).pop();
     }else{
       Provider.of<Products>(context, listen: false).addProduct(_editedProduct)
         .catchError((error) {
