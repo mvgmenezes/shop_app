@@ -15,28 +15,45 @@ class _OrderScreenState extends State<OrderScreen> {
   var _isLoading = false;
   @override
   Future<void> initState() {
-    _isLoading = true;
+    //Using FutureBuilder() instead this below approach
+    /*_isLoading = true;
     Provider.of<Orders>(context, listen: false).fetchAndSetOrders().then((value) => {
       setState(() {
         _isLoading = false;
       })
-    });
+    });*/
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final oderData = Provider.of<Orders>(context);
+    //Using FutureBuilder() instead this below approach
+    //final oderData = Provider.of<Orders>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Your Orders'),
       ),
       drawer: AppDrawer(),
-      body: _isLoading? Center(child: CircularProgressIndicator(),):ListView.builder(
-        itemCount: oderData.orders.length,
-        itemBuilder: (ctx, index) =>  OrderItem(oderData.orders[index]),
-      ),
+      body: FutureBuilder(
+        future: Provider.of<Orders>(context, listen: false).fetchAndSetOrders(),
+      builder: (ctx, dataSnapshot) {
+          if(dataSnapshot.connectionState == ConnectionState.waiting){
+           return Center(child: CircularProgressIndicator());
+          }else{
+            if(dataSnapshot.error != null){
+              //DO somenting with error
+              return Center(child:
+                  Text('an erorr occured!')
+              );
+            }else{
+             return Consumer<Orders>(builder: (ctx,orderData, child) => ListView.builder(
+               itemCount: orderData.orders.length,
+               itemBuilder: (ctx, index) =>  OrderItem(orderData.orders[index]),
+             ));
+            }
+          }
+      },)
     );
   }
 }
