@@ -115,7 +115,8 @@ class Products with ChangeNotifier{
       'title': product.title,
       'description': product.description,
       'price': product.price,
-      'imageUrl': product.imageUrl
+      'imageUrl': product.imageUrl,
+      'creatorId': userId
     })).then((response) {
       final newProduct = new Product(
       id: json.decode(response.body)['name'],
