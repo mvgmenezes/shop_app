@@ -24,8 +24,8 @@ class Product with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<void> toggleFavoriteStatus() async {
-    final url = 'https://haab-575b9.firebaseio.com/products/$id.json';
+  Future<void> toggleFavoriteStatus(String authToken) async {
+    final url = 'https://haab-575b9.firebaseio.com/products/$id.json?auth=$authToken';
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();

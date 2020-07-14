@@ -104,7 +104,7 @@ class Products with ChangeNotifier{
 
   //example dont using async / wait but using the then()
   Future<void> addProduct(Product product){
-    const url = 'https://haab-575b9.firebaseio.com/products.json';
+    final url = 'https://haab-575b9.firebaseio.com/products.json?auth=$authToken';
     return http.post(url, body: json.encode({
       'title': product.title,
       'description': product.description,
@@ -131,7 +131,7 @@ class Products with ChangeNotifier{
   Future<void> updateProduct(String id, Product newProduct) async{
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if(prodIndex >= 0) {
-      final url = 'https://haab-575b9.firebaseio.com/products/$id.json';
+      final url = 'https://haab-575b9.firebaseio.com/products/$id.json?auth=$authToken';
       //patch update only this new values, merge with actual object
       http.patch(url, body: json.encode({
         'title': newProduct.title,
@@ -145,7 +145,7 @@ class Products with ChangeNotifier{
   }
 
   Future<void> deleteProduct(String id) async{
-    final url = 'https://haab-575b9.firebaseio.com/products/$id.json';
+    final url = 'https://haab-575b9.firebaseio.com/products/$id.json?auth=$authToken';
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     //var existingProduct = _items[existingProductIndex];
     final response = await http.delete(url);
