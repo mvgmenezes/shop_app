@@ -24,13 +24,13 @@ class Product with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<void> toggleFavoriteStatus(String authToken) async {
-    final url = 'https://haab-575b9.firebaseio.com/products/$id.json?auth=$authToken';
-    final oldStatus = isFavorite;
+  Future<void> toggleFavoriteStatus(String authToken, String userId) async {
+    final url = 'https://haab-575b9.firebaseio.com/favorites/$userId/$id.json?auth=$authToken';
+    //final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
     try{
-      final response = await http.patch(url, body: json.encode({'isFavorite': isFavorite}));
+      final response = await http.put(url, body: json.encode(isFavorite));
       if (response.statusCode >= 400){
         _returnValueFavorite();
       }

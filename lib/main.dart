@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProxyProvider<Auth, Products>( //changing to proxy provider to send token from Auth() by parameter
           update: (ctx, auth, previousProducts) => Products(
               auth.token,
+              auth.userId,
               previousProducts == null ? [] : previousProducts.items //dont erase the list of products when it reload, you can pass by parameter
           ),
         ),

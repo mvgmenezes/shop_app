@@ -42,8 +42,9 @@ class Products with ChangeNotifier{
   ];
 
   final String authToken;
+  final String userId;
 
-  Products(this.authToken, this._items);
+  Products(this.authToken, this.userId, this._items);
 
   //var _showFavoritesOnly = false;
   List<Product> get items{
@@ -83,6 +84,11 @@ class Products with ChangeNotifier{
       if(extractedData == null){
         return;
       }
+      //connecting the favorite response
+      final urlFavorite = 'https://haab-575b9.firebaseio.com/favorites/$userId.json?auth=$authToken';
+      final favoriteResponse = await http.get(urlFavorite);
+      final favoriteData = json.decode(favoriteResponse.body);
+
       final List<Product> loadedProducts = [];
       extractedData.forEach((key, value) {
         loadedProducts.add(Product(
@@ -90,7 +96,7 @@ class Products with ChangeNotifier{
           title: value['title'],
           description: value['description'],
           price: value['price'],
-          isFavorite: value['isFavorite'],
+          isFavorite: favoriteData == null ? false : favoriteData[key] ?? false, //the ?? is the another check if is null the favoriteData[key]
           imageUrl: value['imageUrl'],
         ));
       });
@@ -109,8 +115,7 @@ class Products with ChangeNotifier{
       'title': product.title,
       'description': product.description,
       'price': product.price,
-      'imageUrl': product.imageUrl,
-      'isFavorite': product.isFavorite
+      'imageUrl': product.imageUrl
     })).then((response) {
       final newProduct = new Product(
       id: json.decode(response.body)['name'],
